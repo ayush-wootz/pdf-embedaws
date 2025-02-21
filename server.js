@@ -24,7 +24,7 @@ app.get('/get-pdf', async (req, res) => {
     console.log('Fetching PDF from S3...');
     const data = await s3.getObject({
       Bucket: 'awsdwg',
-      Key: '1abc'
+      Key: '3abc'
     }).promise();
     console.log('PDF fetched successfully');
     
