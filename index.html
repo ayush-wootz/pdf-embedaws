@@ -3,29 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PDF Embed Test</title>
-  <!-- Add AWS SDK -->
+  <title>PDF Viewer</title>
   <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1048.0.min.js"></script>
-  <script type="text/javascript">
-    // AWS Configuration
-    AWS.config.update({
-      region: 'eu-north-1',
-      credentials: new AWS.Credentials({
-        accessKeyId: 'AKIAQUFLQFCC7PYZG2X7',
-        secretAccessKey: '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'
-      })
-    });
+</head>
+<body>
+  <div id="adobe-dc-view"></div>
 
-    const s3 = new AWS.S3();
-    const bucketName = 'awsdwg';
-    const fileName = '1abc';  // Your static file key
-
+  <script>
     // Function to get signed URL
-    async function getSignedUrl() {
+    function getSignedUrl() {
+      const s3 = new AWS.S3({
+        region: 'eu-north-1',
+        credentials: {
+          accessKeyId: 'AKIAQUFLQFCC7PYZG2X7',
+          secretAccessKey: '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'
+        }
+      });
+
       const params = {
-        Bucket: bucketName,
-        Key: fileName,
-        Expires: 3600 // URL expires in 1 hour
+        Bucket: 'awsdwg',
+        Key: '1abc',
+        Expires: 3600
       };
 
       return new Promise((resolve, reject) => {
@@ -35,12 +33,12 @@
         });
       });
     }
-    
-    // Function that initializes the Adobe PDF Embed API viewer
+
     async function initializePDFViewer() {
       try {
         const signedUrl = await getSignedUrl();
-        
+        console.log('Signed URL:', signedUrl); // Debug
+
         var adobeDCView = new AdobeDC.View({
           clientId: "4daca7356e3b4392ad86b97ead5cfe49",
           divId: "adobe-dc-view"
@@ -51,17 +49,12 @@
           metaData: { fileName: "Document.pdf" }
         }, { defaultViewMode: "FIT_WIDTH" });
       } catch (error) {
-        console.error('Error getting signed URL:', error);
+        console.error('Error:', error);
       }
     }
-    
-    // Register the event listener before viewer.js is loaded
+
     document.addEventListener("adobe_dc_view_sdk.ready", initializePDFViewer);
   </script>
-</head>
-<body>
-  <div id="adobe-dc-view"></div>
-  <!-- Load the Adobe viewer SDK after our listener is in place -->
   <script src="https://acrobatservices.adobe.com/view-sdk/viewer.js"></script>
 </body>
 </html>
